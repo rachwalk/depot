@@ -60,4 +60,25 @@ class ProductTest < ActiveSupport::TestCase
     assert product.invalid?
     assert_equal ["has already been taken"], product.errors[:title]
   end
+
+  def new_product_2(title)
+    Product.new(title:  title,
+                description: "yyy",
+                price: 1,
+                image_url: "fred.gif")
+  end
+
+  test "product is not valid with title shorter than 10 characters" do
+    product = new_product_2("short")
+    assert product.invalid?
+    assert_equal ["must be at least 10 chars!"], product.errors[:title]
+
+    product = new_product_2("1234567890")
+    assert product.valid?
+
+    product = new_product_2("This is a very long title")
+    assert product.valid?
+  end
+
+
 end
