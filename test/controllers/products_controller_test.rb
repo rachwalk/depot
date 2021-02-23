@@ -46,4 +46,13 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to products_url
   end
+
+  test "should show CRUD options for each product" do 
+    get products_url
+    assert_select '.actions ul' do |elements|
+      elements.each do |element|
+        assert_select element, 'li', 3
+      end
+    end
+  end
 end
