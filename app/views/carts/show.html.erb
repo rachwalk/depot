@@ -9,6 +9,15 @@
         <td class="quantity"><%= line_item.quantity %> </td>
         <td> <%= line_item.product.title %> </td>
         <td class="price"><%= number_to_currency(line_item.total_price, format: "%n %u", unit:"zł") %> </td>
+        <td>
+          <%= button_to 'Delete Item', 
+            {:controller => :line_items,
+             :action => 'destroy',
+             :id => line_item.id}, 
+            method: :delete, 
+            data: {confirm: 'Are you sure?'}
+            %> 
+        </td>
       </tr>
     <% end %>
     <tfoot>
