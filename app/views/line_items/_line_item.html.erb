@@ -6,6 +6,14 @@
   <td class="quantity"><%= line_item.quantity %></td>
   <td><%= line_item.product.title %></td>
   <td class="price"><%= number_to_currency(line_item.total_price) %></td>
+  <td>
+    <%= button_to 'Remove One', 
+      {:controller => :line_items,
+       :action => 'decrease',
+       :id => line_item.id}, 
+      method: :patch
+    %>
+  </td>
   <% if false %>
   <td>
     <%= button_to 'Delete Item', 

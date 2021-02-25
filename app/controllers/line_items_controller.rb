@@ -1,7 +1,7 @@
 class LineItemsController < ApplicationController
   include CurrentCart
   before_action :set_cart, only: [:create]
-  before_action :set_line_item, only: %i[ show edit update destroy ]
+  before_action :set_line_item, only: %i[ show edit update destroy decrease]
 
   # GET /line_items or /line_items.json
   def index
@@ -59,6 +59,26 @@ class LineItemsController < ApplicationController
     respond_to do |format|
       format.html { redirect_to cart, notice: "Removed item from the cart" }
       format.json { head :no_content }
+    end
+  end
+
+  def decrease
+    if(@line_item.quantity <= 1)
+      @line_item.destroy
+      respond_to do |format|
+        format.html {redirect_to store_index_url}
+        format.json { head :no_content }
+      end
+    else
+      respond_to do |format|
+        if @line_item.update(:quantity => @line_item.quantity-1 )
+          format.html { redirect_to store_index_url}
+          format.json { render :show, status: :ok, location: @line_item }
+        else
+          format.html { render :edit, status: :unprocessable_entity }
+          format.json { render json: @line_item.errors, status: :unprocessable_entity }
+        end
+      end
     end
   end
 
