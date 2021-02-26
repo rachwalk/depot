@@ -1,6 +1,7 @@
 require "application_system_test_case"
 
 class OrdersTest < ApplicationSystemTestCase
+  include ActiveJob::TestHelper
   setup do
     @order = orders(:one)
   end
@@ -46,4 +47,41 @@ class OrdersTest < ApplicationSystemTestCase
 
     assert_text "Order was successfully destroyed"
   end
+
+  test "check routing number" do
+    LineItem.delete_all
+    Order.delete_all
+
+    visit store_index_url
+
+    click_on 'Add to Cart', match: :first
+
+    click_on 'Checkout'
+
+    fill_in 'order_name', with: 'Dave Thomas'
+    fill_in 'order_address', with: '123 Main Street'
+    fill_in 'order_email', with: 'dave@example.com'
+
+    assert_no_selector "#order_routing_number"
+
+    select 'Check', from: 'Pay type'
+
+
+    assert_selector '#order_routing_number'
+    fill_in "Routing #", with: "123456"
+    fill_in "Account #", with: "987654"
+    perform_enqueued_jobs do
+      click_button "Place Order"
+    end
+    orders = Orders.all
+    assert_equal 1, orders.size
+
+    order = orders.first
+
+    assert_equal "Dave Thomas", order.name
+    assert_equal "123 Main Street", order.address
+    assert_equal "dave@example.com", order.email
+    assert_equal "Check", order.pay_type
+    assert_equal 1, order.line_items.size
+    end
 end
