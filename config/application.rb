@@ -10,6 +10,7 @@ module Depot
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 6.1
+    config.filter_parameters += [ :credit_card_number ]
 
     # Configuration for the application, engines, and railties goes here.
     #
